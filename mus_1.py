@@ -7,21 +7,23 @@ Created on Sun Jul  8 16:13:21 2018
 import re
 import numpy as np
 chord=["CEG","DFA","EGB","FAC","GBD","ACE","BDF"]
+updown=[-1,0,1]
 
 tune="EGFEDC,DEF,EDFEGFE,FED,GGGC,DCDEFED,GGAF,ECDC"
+sync=["135,13,"]
 commas=re.findall(r'(?<!\d),(?!\d)', tune) # find all parts
 n1=0
 mus=" "
 for ii in range(len(commas)):
+    # bar devision
     ind=tune[n1:].find(',')
     s1=tune[n1:n1+ind] # the notes in the part 4/4
     n1+=ind+1
     if ii == len(commas)-1: # the last one
         s1=tune[n1:]
-    print(s1)
+    # random harmonixation
     skip=np.random.randint(len(s1))
     for jj in range(len(s1)): # separate notes
-        
         chor=[]
         note=s1[jj]
         if jj==skip:
@@ -35,6 +37,7 @@ for ii in range(len(commas)):
         mus=mus+note+"-"+ran+" "
     print(" ")
     mus=mus+"|"
+    
 print(mus)
         
 
