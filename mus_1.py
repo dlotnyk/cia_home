@@ -110,7 +110,7 @@ for ii in range(len(commas)):
 #        print(ran)
         mus=mus+note+"-"+ran+" "
        
-        mus=mus+"|"     
+    mus=mus+"|"     
      # non random harmony
     sx=np.fromstring(s2, dtype=int, sep=' ')
     
