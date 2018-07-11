@@ -6,6 +6,23 @@ Created on Sun Jul  8 16:13:21 2018
 """
 import re
 import numpy as np
+from bs4 import BeautifulSoup as BS
+from shutil import copyfile
+
+def open_f():
+    source = "tune1.mscx"
+    infile = open(source,"r")
+    contents = infile.read()
+    data = BS(contents, 'xml')
+    return data
+
+def save_f(data):
+    target="tune1_copy.mscx"
+    st1=str(data)
+    with open(target,'w') as file1:
+        file1.write(st1)
+    
+notesb=[["A","45 17","57 19"],["B","47 19","59 19"],["C","48 17","60 14"],["D","50 16","62 16"],["E","52 18","64 18"],["F","53 13","65 13"],["G","55 15","67 15"]]
 chord=["CEG","DFA","EGB","FAC","GBD","ACE","BDF"]
 def find_chord(chord,note):
     chor=[]
