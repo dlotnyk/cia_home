@@ -78,6 +78,7 @@ def duration(num):
         let="16th"
     return let
 def make_chord(voice,dur,pitch,tpc):
+    """make a chord a combine into file xml format"""
     bbn=BS("","lxml")
     tag_chord=bbn.new_tag("Chord")
     tag_track=bbn.new_tag("track")
@@ -106,10 +107,24 @@ def make_chord(voice,dur,pitch,tpc):
         tag_tps.append(tpc)
     bbn.append(tag_chord)   
     return bbn
-a=make_chord(1,4,"65","15")
-print(a)
+def make_tune(voice,VV,tune,part,num_measure):
+    """save a tune into file"""
+    bb=BS("","lxml")
+    tag_tick=bb.new_tag("tick") # voice separator 1920
+    
+    if voice!=0:
+        tag_tick.append(str(1920*num_measure))
+        bb.append(tag_tick)
+    for ii in range(len(tune[part])):
+        ch=make_chord(voice,tune[part][ii][0],VV[tune[part][ii][1]][1],VV[tune[part][ii][1]][2])
+        bb.append(ch)
+    return bb
 #tune1="4 1,4 5,4 3,4-1"#,|8-2,8-1,4-2,8-3,8-4,8-3,8-2,"
 tune=[[[4,1],[4,5],[4,3],[4,1]],[[8,2],[8,1],[4,2],[8,3],[8,4],[8,3],[8,2]]]
+tune01=tune
+tune01[0][0]=tune[0][1]
+tunex=[[[4,2],[4,3],[4,1],[4,2]],[[8,3],[8,4],[4,2],[8,3],[8,2],[8,1],[8,0]]]
+#print(tune01)
 #print(tune[0][0][1])
 harmony=["CEG","DFA","EGB","FAC","GBD","ACE","BDF"]
 firstV=[["B","72","14"],["C","74","16"],["D","76","18"],["E","77","13"],["F","79","15"],["G","81","17"],["A","83","19"]]
@@ -119,23 +134,49 @@ forthV=[["B","36","14"],["C","38","16"],["D","40","18"],["E","41","13"],["F","43
 data=open_f()
 measures=data.find_all('Measure') # number of bars
 counter=0
-for mm in measures:
-    if counter>1:
-        if counter%2==0:
-            rest=mm.find_all('Rest')
-            bb=BS("","lxml")
-            for ii in range(len(tune[0])):
-                ch=make_chord(0,tune[0][ii][0],thirdV[tune[0][ii][1]][1],thirdV[tune[0][ii][1]][2])
-                bb.append(ch)
-            rest[0].replaceWith(bb)
-        else:
-            rest=mm.find_all('Rest')
-            bb=BS("","lxml")
-            for ii in range(len(tune[1])):
-                ch=make_chord(0,tune[1][ii][0],thirdV[tune[1][ii][1]][1],thirdV[tune[1][ii][1]][2])
-                bb.append(ch)
-            rest[0].replaceWith(bb)
-    counter+=1
-    
-save_f(data)                
-print(tune[0][1][1])
+# measure 3
+
+rest=measures[2].find_all('Rest')
+bb=make_tune(0,firstV,tunex,0,2) # first voice
+bb3=make_tune(3,thirdV,tune01,0,2) # third voice
+bb.append(bb3)
+rest[0].replaceWith(bb)
+# measure 4
+rest=measures[3].find_all('Rest')
+bb=make_tune(0,firstV,tunex,1,3)
+bb1=make_tune(3,thirdV,tune01,1,3)
+bb.append(bb1)
+rest[0].replaceWith(bb)
+
+save_f(data)
+#a1=1920*3
+#s=str(a1)
+#tag_tick.append("5760")
+#for ii in range(len(tunex[1])):
+#    ch=make_chord(0,tunex[1][ii][0],firstV[tunex[1][ii][1]][1],firstV[tunex[1][ii][1]][2])
+#    bb.append(ch)
+##third voice
+#bb.append(tag_tick)
+#for ii in range(len(tune01[1])):
+#    ch=make_chord(2,tune01[1][ii][0],thirdV[tune01[1][ii][1]][1],thirdV[tune01[1][ii][1]][2])
+#    bb.append(ch)
+
+#for mm in measures:
+#    if counter>1:
+#        if counter%2==0:
+#            rest=mm.find_all('Rest')
+#            bb=BS("","lxml")
+#            for ii in range(len(tune[0])):
+#                ch=make_chord(0,tune[0][ii][0],thirdV[tune[0][ii][1]][1],thirdV[tune[0][ii][1]][2])
+#                bb.append(ch)
+#            rest[0].replaceWith(bb)
+#        else:
+#            rest=mm.find_all('Rest')
+#            bb=BS("","lxml")
+#            for ii in range(len(tune[1])):
+#                ch=make_chord(0,tune[1][ii][0],thirdV[tune[1][ii][1]][1],thirdV[tune[1][ii][1]][2])
+#                bb.append(ch)
+#            rest[0].replaceWith(bb)
+#    counter+=1
+#    
+                
