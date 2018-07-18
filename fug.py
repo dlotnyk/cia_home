@@ -120,10 +120,34 @@ def make_tune(voice,VV,tune,part,num_measure):
         bb.append(ch)
     return bb
 #tune1="4 1,4 5,4 3,4-1"#,|8-2,8-1,4-2,8-3,8-4,8-3,8-2,"
+    #subject
 tune=[[[4,1],[4,5],[4,3],[4,1]],[[8,2],[8,1],[4,2],[8,3],[8,4],[8,3],[8,2]]]
 tune01=tune
-tune01[0][0]=tune[0][1]
-tunex=[[[4,2],[4,3],[4,1],[4,2]],[[8,3],[8,4],[4,2],[8,3],[8,2],[8,1],[8,0]]]
+tune01[0][1]=tune01[0][0]
+# X
+tunex=[[[4,2],[4,3],[4,1],[4,2]],[[4,1],[4,2],[4,3],[8,2],[8,1]]]
+tunex1=tunex
+tunex1[0][1]=tunex1[0][0]
+# Y
+tuney=[[[8,1],[8,2],[8,3],[8,4],[8,3],[8,2],[8,3],[8,4]],[[4,3],[4,2],[4,1],[4,0]]]
+tuney1=tuney
+tuney1[0][1]=tuney1[0][0]
+#Z
+tunez=[[[2,1],[2,2]],[[1,3]]]
+tunez1=tunez
+tunez1[0][1]=tunez1[0][0]
+#A
+tunea=[[[8,1],[8,2],[8,3],[8,4],[8,3],[8,2],[8,3],[8,4]],[[16,3],[16,2],[16,1],[16,0],[16,1],[16,2],[16,3],[16,4],[16,3],[16,4],[16,3],[16,4],[8,3],[8,2]]]
+tunea1=tunea
+tunea1[0][1]=tunea1[0][0]
+#B
+tuneb=[[[8,3],[8,2],[8,3],[8,4],[8,5],[8,4],[8,3],[8,2]],[[8,1],[8,2],[8,3],[8,4],[8,5],[8,4],[8,3],[8,2]]]
+tuneb1=tuneb
+tuneb1[0][1]=tuneb1[0][0]
+#C
+tunec=[[[4,4],[4,5],[4,1],[4,2]],[[4,1],[4,5],[4,3],[4,1]]]
+tunec1=tunec
+tunec1[0][1]=tunec1[0][0]
 #print(tune01)
 #print(tune[0][0][1])
 harmony=["CEG","DFA","EGB","FAC","GBD","ACE","BDF"]
@@ -134,20 +158,156 @@ forthV=[["B","36","14"],["C","38","16"],["D","40","18"],["E","41","13"],["F","43
 data=open_f()
 measures=data.find_all('Measure') # number of bars
 counter=0
-# measure 3
-
+# measure 3 
+# X -0- S'-0
 rest=measures[2].find_all('Rest')
 bb=make_tune(0,firstV,tunex,0,2) # first voice
-bb3=make_tune(3,thirdV,tune01,0,2) # third voice
+bb3=make_tune(2,thirdV,tune01,0,2) # third voice
 bb.append(bb3)
 rest[0].replaceWith(bb)
 # measure 4
 rest=measures[3].find_all('Rest')
 bb=make_tune(0,firstV,tunex,1,3)
-bb1=make_tune(3,thirdV,tune01,1,3)
+bb1=make_tune(2,thirdV,tune01,1,3)
 bb.append(bb1)
 rest[0].replaceWith(bb)
-
+#measure 5
+#Y-S-X'
+rest=measures[4].find_all('Rest')
+bb=make_tune(0,firstV,tuney,0,4)
+bb1=make_tune(1,secondV,tune,0,4)
+bb2=make_tune(2,thirdV,tunex1,0,4)
+bb.append(bb1)
+bb.append(bb2)
+rest[0].replaceWith(bb)
+#measure 6
+tune=[[[4,1],[4,5],[4,3],[4,1]],[[8,2],[8,1],[4,2],[8,3],[8,4],[8,3],[8,2]]]
+rest=measures[5].find_all('Rest')
+bb=make_tune(0,firstV,tuney,1,5)
+bb1=make_tune(1,secondV,tune,1,5)
+bb2=make_tune(2,thirdV,tunex1,1,5)
+bb.append(bb1)
+bb.append(bb2)
+rest[0].replaceWith(bb)
+# measure 7
+#Z-X-Y'-S'
+rest=measures[6].find_all('Rest')
+bb=make_tune(0,firstV,tunez,0,6)
+bb1=make_tune(1,secondV,tunex,0,6)
+bb2=make_tune(2,thirdV,tuney1,0,6)
+bb3=make_tune(3,forthV,tune01,0,6)
+bb.append(bb1)
+bb.append(bb2)
+bb.append(bb3)
+rest[0].replaceWith(bb)
+# measure 8
+rest=measures[7].find_all('Rest')
+bb=make_tune(0,firstV,tunez,1,7)
+bb1=make_tune(1,secondV,tunex,1,7)
+bb2=make_tune(2,thirdV,tuney1,1,7)
+bb3=make_tune(3,forthV,tune01,1,7)
+bb.append(bb1)
+bb.append(bb2)
+bb.append(bb3)
+rest[0].replaceWith(bb)
+# measure 9
+#A-Y-Z'-X'
+rest=measures[8].find_all('Rest')
+bb=make_tune(0,firstV,tunea,0,8)
+bb1=make_tune(1,secondV,tuney,0,8)
+bb2=make_tune(2,thirdV,tunez1,0,8)
+bb3=make_tune(3,forthV,tunex1,0,8)
+bb.append(bb1)
+bb.append(bb2)
+bb.append(bb3)
+rest[0].replaceWith(bb)
+# measure 10
+#A-Y-Z'-X'
+rest=measures[9].find_all('Rest')
+bb=make_tune(0,firstV,tunea,1,9)
+bb1=make_tune(1,secondV,tuney,1,9)
+bb2=make_tune(2,thirdV,tunez1,1,9)
+bb3=make_tune(3,forthV,tunex1,1,9)
+bb.append(bb1)
+bb.append(bb2)
+bb.append(bb3)
+rest[0].replaceWith(bb)
+# measure 11
+#B-Z-A'-Y'
+rest=measures[10].find_all('Rest')
+bb=make_tune(0,firstV,tuneb,0,10)
+bb1=make_tune(1,secondV,tunez,0,10)
+bb2=make_tune(2,thirdV,tunea1,0,10)
+bb3=make_tune(3,forthV,tuney1,0,10)
+bb.append(bb1)
+bb.append(bb2)
+bb.append(bb3)
+rest[0].replaceWith(bb)
+# measure 12
+#B-Z-A'-Y'
+rest=measures[11].find_all('Rest')
+bb=make_tune(0,firstV,tuneb,1,11)
+bb1=make_tune(1,secondV,tunez,1,11)
+bb2=make_tune(2,thirdV,tunea1,1,11)
+bb3=make_tune(3,forthV,tuney1,1,11)
+bb.append(bb1)
+bb.append(bb2)
+bb.append(bb3)
+rest[0].replaceWith(bb)
+# measure 13
+#C-A-B'-Z'
+rest=measures[12].find_all('Rest')
+bb=make_tune(0,firstV,tunec,0,12)
+bb1=make_tune(1,secondV,tunea,0,12)
+bb2=make_tune(2,thirdV,tuneb1,0,12)
+bb3=make_tune(3,forthV,tunez1,0,12)
+bb.append(bb1)
+bb.append(bb2)
+bb.append(bb3)
+rest[0].replaceWith(bb)
+# measure 14
+#C-A-B'-Z'
+rest=measures[13].find_all('Rest')
+bb=make_tune(0,firstV,tunec,1,13)
+bb1=make_tune(1,secondV,tunea,1,13)
+bb2=make_tune(2,thirdV,tuneb1,1,13)
+bb3=make_tune(3,forthV,tunez1,1,13)
+bb.append(bb1)
+bb.append(bb2)
+bb.append(bb3)
+rest[0].replaceWith(bb)
+# measure 15
+#0-0-0-A
+tune=[[[4,1],[4,5],[4,3],[4,1]],[[8,2],[8,1],[4,2],[8,3],[8,4],[8,3],[8,2]]]
+rest=measures[14].find_all('Rest')
+bb=make_tune(0,forthV,tune,0,14)
+rest[0].replaceWith(bb)
+# measure 16
+#A
+rest=measures[15].find_all('Rest')
+bb=make_tune(0,forthV,tune,1,15)
+rest[0].replaceWith(bb)
+## measure 17
+tr1=tune[::-1]
+tr2=tr1
+tr2[0]=tr1[0][::-1]
+tr2[1]=tr1[1][::-1]
+rest=measures[16].find_all('Rest')
+bb=make_tune(0,forthV,tr2,0,16)
+rest[0].replaceWith(bb)
+#measure 18
+rest=measures[17].find_all('Rest')
+bb=make_tune(0,forthV,tr2,1,17)
+rest[0].replaceWith(bb)
+#rest=measures[16].find_all('Rest')
+#bb=make_tune(0,forthV,tune[1][::-1],0,16)
+#rest[0].replaceWith(bb)
+## measure 18
+##rev
+#rest=measures[17].find_all('Rest')
+#bb=make_tune(0,forthV,r0,1,17)
+#rest[0].replaceWith(bb)
+# save
 save_f(data)
 #a1=1920*3
 #s=str(a1)
