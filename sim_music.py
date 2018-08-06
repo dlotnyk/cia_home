@@ -44,25 +44,27 @@ class wavf:
             else:
                 rec[count]=0
             count+=1
-        print(int(l/2),int(l))
+#        print(int(l/2),int(l))
 #        rec[int(l/2):-1]=rec[0:int(l/2)-1]
         rec1=np.fft.ifft(rec)
 #        print(np.shape(self.time),np.shape(rec),np.shape(rec1))
         fig1 = plt.figure(num_fig, clear = True)
         ax1 = fig1.add_subplot(211)
-        ax1.set_ylabel('ampl')
-        ax1.set_xlabel('frequency')
-        ax1.set_title('ampl and f')
+        ax1.set_ylabel('Amplitude [a.u.]')
+        ax1.set_xlabel('Frequency [Hz]')
+        ax1.set_title('FFT')
         ax1.plot(f, p1, color='green',lw=1)
+        ax1.set_xlim(0,7500)
 #        ax1.plot(f,rec,color='red',lw=1)
-        
+        plt.grid()
         ax2 = fig1.add_subplot(212)
-        ax2.set_ylabel('ampl')
-        ax2.set_xlabel('time')
-        ax2.set_title('ampl and time')
+        ax2.set_ylabel('Amplitude [a.u.]')
+        ax2.set_xlabel('Time [sec]')
+        ax2.set_title(' ')
         ax2.plot(time,rec1, color='green',lw=1)
         plt.grid()
         plt.show()
+        return p1,f
     def fir_f(self,nr,wid,db,cut):
         '''the FIR filter'''
         # The Nyquist rate of the signal.
@@ -83,11 +85,12 @@ class wavf:
         filtered_x = lfilter(taps, 1.0, self.data)
         fig1 = plt.figure(3, clear = True)
         ax1 = fig1.add_subplot(111)
-        ax1.set_ylabel('ampl')
-        ax1.set_xlabel('time')
-        ax1.set_title('ampl and t')
+        ax1.set_ylabel('Amplitude [a.u.]')
+        ax1.set_xlabel('Time [sec]')
+        ax1.set_title('Original and FIR filtered Violin wav data')
         ax1.plot(self.time, self.data, color='green',lw=1)
         ax1.plot(self.time,filtered_x,color='red',lw=1)
+        ax1.legend(['Original data','FIR filtered'])
         plt.grid()
         plt.show()
         self.filt=np.int16(filtered_x)
@@ -95,25 +98,105 @@ class wavf:
     def cut_wav(self,data,n1,n2):
         '''cut some note from wav file'''
         c_data=data[n1:n2]
+        time=np.linspace(n1/self.fs,n2/self.fs,int(n2-n1))
+#        print(np.shape(time)[0],np.shape(c_data)[0])
+#        self.fft_f(time,c_data,5)
         self.save_f(c_data,'part.wav',0)
-        
-    
+        return c_data,time
+    def shift(self,data,nn):
+        '''shift one wav over another'''
+        num=int(nn)
+        # first voice
+        dnum=np.shape(data)[0]
+        time=np.linspace(0,(num+dnum)/self.fs,int(num+dnum))
+        ch1=np.zeros(dnum+num,dtype='int16')
+        ch2=np.zeros(dnum+num,dtype='int16')
+        for ii in range(dnum):
+            ch1[ii]=data[ii]
+            ch2[ii+num]=data[ii]
+        ch_mix=np.zeros((dnum+num,2),dtype='int16')
+        ch_add=np.zeros(dnum+num,dtype='int16')
+        for ii in range(dnum+num):
+            if ii%2==0:
+                ch_add[ii]=ch1[ii]
+            else:
+                ch_add[ii]=ch2[ii]
+            ch_mix[ii][0]=ch1[ii]
+            ch_mix[ii][1]=ch2[ii]
+        self.save_f(ch_add,'ch_add.wav',0)
+        self.save_f(ch_mix,'ch_mix.wav',0)
+        self.fft_f(time,ch_add,6)
+        return ch_add,ch_mix,time
+    def gen_sample(self,data):
+        '''generate wav with'''
+        delay=0
+        delay2=3000
+        for ii in range(10):
+            if ii==0:
+                ch_add,ch_mix,t=self.shift(data,delay)
+                ch_add2,ch_mix2,t2=self.shift(data,delay2)
+            else:
+                ch_a,ch_m,t=self.shift(data,delay)
+                ch_add=np.concatenate((ch_add,ch_a))
+                ch_mix=np.concatenate((ch_mix,ch_m))
+                ch_a2,ch_m2,t2=self.shift(data,delay2)
+                ch_add2=np.concatenate((ch_add2,ch_a2))
+                ch_mix2=np.concatenate((ch_mix2,ch_m2))
+            delay+=200
+            delay2-=300
+        print(np.shape(ch_mix),delay)
+        self.save_f(ch_add,'sample_1.wav',0)
+        self.save_f(ch_mix,'sample_m.wav',0)
+        self.save_f(ch_add2,'sample_2.wav',0)
+        self.save_f(ch_mix2,'sample_m2.wav',0)
+   
 #file=wave.open(wavfiles[0],mode='r')
 #data=wave_read.getparams()
 A=wavf()
 #print(np.shape(A.data),np.shape(A.time))
 fig1 = plt.figure(1, clear = True)
 ax1 = fig1.add_subplot(111)
-ax1.set_ylabel('ampl')
-ax1.set_xlabel('time')
-ax1.set_title('ampl and time')
+ax1.set_ylabel('Amplitude [a.u.]')
+ax1.set_xlabel('Time [sec]')
+ax1.set_title('Original signal. Violin')
 ax1.plot(A.time, A.data, color='green',lw=1)
 d=A.data
 plt.grid()
 plt.show()
-A.fft_f(A.time,A.data,2)
-A.fir_f(5,5,50,1000)
-A.fft_f(A.time,A.filt,4)
+
+p1,f1=A.fft_f(A.time,A.data,2)
+A.fir_f(5,5,50,1300)
+p2,f2=A.fft_f(A.time,A.filt,4)
+
+fig1 = plt.figure(10, clear = True)
+ax1 = fig1.add_subplot(111)
+ax1.set_ylabel('Amplitude [a.u.]')
+ax1.set_xlabel('Frequency [Hz]')
+ax1.set_title('FFT of original and FIR filtered Violin wav data')
+ax1.plot(f1, p1, color='green',lw=1)
+ax1.plot(f2,p2,color='red',lw=1)
+ax1.legend(['Original data','FIR filtered'])
+ax1.set_xlim(0,7500)
+plt.grid()
+plt.show()
+       
 A.save_f(A.filt,'test.wav',0)
-A.cut_wav(A.filt,100,100000)
+c_data,c_time=A.cut_wav(A.filt,100,75000)
+p3,f3=A.fft_f(c_time,c_data,5)
+ch_add,ch_mix,time2=A.shift(c_data,10000)
+p4,f4=A.fft_f(time2,ch_add,8)
+
+fig1 = plt.figure(11, clear = True)
+ax1 = fig1.add_subplot(111)
+ax1.set_ylabel('Amplitude [a.u.]')
+ax1.set_xlabel('Frequency [Hz]')
+ax1.set_title('FFT of sample and shifted')
+ax1.plot(f3, p3, color='green',lw=1)
+ax1.plot(f4, p4,color='red',lw=1)
+ax1.legend(['Sample','Shifted'])
+ax1.set_xlim(0,7500)
+plt.grid()
+plt.show()
+
+A.gen_sample(c_data)
 del A
