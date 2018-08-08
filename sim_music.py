@@ -7,7 +7,7 @@ Created on Sat Jul 28 21:00:26 2018
 from scipy.io import wavfile
 import matplotlib.pyplot as plt
 import numpy as np
-from scipy.signal import kaiserord, lfilter, firwin, freqz
+from scipy.signal import kaiserord, lfilter, firwin, freqz, correlate
 #open wav files
 class wavf:
     def __init__(self):
@@ -149,7 +149,27 @@ class wavf:
         self.save_f(ch_mix,'sample_m.wav',0)
         self.save_f(ch_add2,'sample_2.wav',0)
         self.save_f(ch_mix2,'sample_m2.wav',0)
-   
+        
+    def cr_corr(self,data):
+        '''1D cross correleation'''          
+        data1,ch_mix,time=self.shift(data,1800)
+        lag = np.argmax(correlate(data1, data))
+        d = np.roll(data, shift=int(np.ceil(lag)))
+#        print(np.shape(c_sig))
+#        d=np.correlate(data,data1)
+        num=np.shape(d)[0]
+        fig1 = plt.figure(30, clear = True)
+        ax1 = fig1.add_subplot(111)
+        ax1.set_ylabel('Amplitude [a.u.]')
+        ax1.set_xlabel('Time [sec]')
+        ax1.set_title('Original and FIR filtered Violin wav data')
+        ax1.plot(range(num), d, color='green',lw=1)
+#        ax1.plot(self.time,filtered_x,color='red',lw=1)
+#        ax1.legend(['Original data','FIR filtered'])
+        plt.grid()
+        plt.show()
+        
+       
 #file=wave.open(wavfiles[0],mode='r')
 #data=wave_read.getparams()
 A=wavf()
@@ -181,7 +201,7 @@ plt.grid()
 plt.show()
        
 A.save_f(A.filt,'test.wav',0)
-c_data,c_time=A.cut_wav(A.filt,100,75000)
+c_data,c_time=A.cut_wav(A.filt,10000,75000)
 p3,f3=A.fft_f(c_time,c_data,5)
 ch_add,ch_mix,time2=A.shift(c_data,10000)
 p4,f4=A.fft_f(time2,ch_add,8)
@@ -199,4 +219,5 @@ plt.grid()
 plt.show()
 
 A.gen_sample(c_data)
+A.cr_corr(c_data)
 del A
